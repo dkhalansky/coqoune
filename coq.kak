@@ -25,29 +25,19 @@ add-highlighter shared/coq/code regex %{\b(Declare|Type|Canonical|Structure|Cd|C
 add-highlighter shared/coq/code regex %{\b(Scheme|Back|Combined)\b} 0:value
 add-highlighter shared/coq/code regex %{\b(Show|About|Print)\b} 0:value
 add-highlighter shared/coq/code regex %{\b(Export|Import)\b} 0:value
-add-highlighter shared/coq/code regex %{\b(Implicits|Script|Tree|Conjectures|Intros|Existentials|forall)\b} 0:value
-add-highlighter shared/coq/code regex %{\b(Theorem|Proof|Qed|Defined|Save)\b} 0:value
+add-highlighter shared/coq/code regex %{\b(Implicits|Script|Tree|Conjectures|Intros|Existentials)\b} 0:value
+add-highlighter shared/coq/code regex %{\b(Theorem|Defined|Save)\b} 0:value
 
-# Declare Type Canonical Structure Cd Coercion Derive Drop Existential
-# Functional Scheme Back Combined
-# Show About Print
-# Export Import
-# Implicits Script Tree Conjectures Intros Existentials forall
-# Proof Qed Defined Save 
+add-highlighter shared/coq/code regex "\b(Definition|Arguments|Notation|positive)\b" 0:keyword
+add-highlighter shared/coq/code regex "\b(simpl|induction|trivial|rewrite|intro)\b" 0:keyword
 
+add-highlighter shared/coq/code regex %{\b(Proof|Qed)\b} 0:type
 
-#add-highlighter shared/coq/code regex %{\b()\b} 0:type
-
-
-add-highlighter shared/coq/code regex %{\b(positive)\b} 0:keyword
-
-
-#add-highlighter shared/coq/code regex %{\b()\b} 0:attribute
+add-highlighter shared/coq/code regex %{\b(forall)\b} 0:attribute
 
 
 # Commands
 # ‾‾‾‾‾‾‾‾
-
 # no one
 
 # Initialization
@@ -66,3 +56,4 @@ hook global WinSetOption filetype=(?!coq).* %{
     remove-hooks window coq-hooks
     remove-hooks window coq-indent
 }
+

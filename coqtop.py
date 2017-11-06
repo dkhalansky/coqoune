@@ -27,6 +27,8 @@ Goals = namedtuple('Goals', ['fg', 'bg', 'shelved', 'given_up'])
 Goal = namedtuple('Goal', ['id', 'hyp', 'ccl'])
 Evar = namedtuple('Evar', ['info'])
 
+msg_dict = {}
+
 def parse_response(xml):
     assert xml.tag == 'value'
     if xml.get('val') == 'good':
@@ -160,7 +162,8 @@ def escape(cmd):
     return cmd.replace("&nbsp;", ' ') \
               .replace("&apos;", '\'') \
               .replace("&#40;", '(') \
-              .replace("&#41;", ')')
+              .replace("&#41;", ')') \
+              .replace("&gt;", '>')
 
 def get_answer():
     fd = coqtop.stdout.fileno()
@@ -177,15 +180,45 @@ def get_answer():
                     if c.tag == 'value':
                         shouldWait = False
                         valueNode = c
-                    if c.tag == 'message':
-                        if messageNode is not None:
-                            messageNode = messageNode + "\n\n" + parse_value(c[2])
+
+                        temp = escape(data)
+                        start_str = '<feedback_content val="message">'
+                        finish_str = '</feedback_content>'
+                        start = temp.rfind(start_str)
+                        finish = temp.rfind(finish_str)
+                        if (start != -1) and (finish != -1):
+                            temp = temp[start:finish]
+                            temp = re.sub(r'<.*?>','',temp)
+                            temp = re.sub(r'master','',temp)
                         else:
-                            messageNode = parse_value(c[2])
+                            temp = ''
+#                        messageNode = temp
+
+#                    if c.tag == 'message':
+#                        if messageNode is not None:
+#                            messageNode = messageNode + "\n\n" + parse_value(c[2])
+#                        else:
+#                            messageNode = parse_value(c[2])
+
                 if shouldWait:
                     continue
                 else:
                     vp = parse_response(valueNode)
+                    
+                    global msg_dict
+                    try:
+                        array = str([i.id for i in vp.val.val.fg])
+                        if array == '[]':
+                            print('Error: empty goals')
+                        else:
+                            try:
+                                messageNode = msg_dict[array]
+                            except KeyError:
+                                messageNode = temp
+                                msg_dict[array] = messageNode
+                    except AttributeError:
+                        pass
+                    
                     if messageNode is not None:
                         if isinstance(vp, Ok):
                             return Ok(vp.val, messageNode)
