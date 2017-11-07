@@ -113,7 +113,7 @@ def -hidden coq-apply-diff %[
             echo "select ${nsl%:}"
             echo "eval -itersel %{
                 coq-advance
-                nop %sh{echo 'goals()' | ncat localhost ${kak_opt_coqtop_port}}
+                nop %sh{echo 'goals()' | ncat localhost ${kak_opt_coqtop_port} > /dev/null}
             }"
         fi
     }
@@ -232,7 +232,7 @@ def -hidden coq-go-to-next-unproven %[
 # Commands
 # ‾‾‾‾‾‾‾‾
 
-def coq-init %[
+def coq-init -docstring "Initialize Coq subsystem" %[
     addhl buffer ranges coq_proven
     addhl buffer ranges coq_error
     hook window NormalIdle .* %{
@@ -247,14 +247,14 @@ def coq-init %[
     coq-launch
 ]
 
-def coq-to-cursor %[
+def coq-to-cursor -docstring "Prove everything up to the main cursor" %[
     eval -draft -save-regs '' %{
         coq-go-to-next-dot
         coq-apply-diff
     }
 ]
 
-def coq-next %[
+def coq-next -docstring "Prove the next unproven sentence" %[
     eval -draft -save-regs '' %{
         coq-go-to-next-unproven
         coq-go-to-next-dot
